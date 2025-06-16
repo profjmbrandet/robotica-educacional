@@ -1,0 +1,220 @@
+/********************************************************/
+/* Tema - Braço robótico radiocontrolado - Receptor     */
+/* Programação do receptor para o braço robótico.       */
+/* O módulo irá receber os comandos enviados pelo       */
+/* transmissor e a partir destes, será feito o controle */
+/* dos movimentos de cada servomotor.                   */
+/********************************************************/
+/* Biblioteca RF24 by TNRh 20, Avamander                */
+/* http://librarymanager/All#RF24#simple#modules        */
+/* https://github.com/nRF24/RF24/                       */
+/********************************************************/
+/* Define o endereço de comunicação entre os módulos de */
+/* transmissão e recepção. O endereço deverá ser o mesmo*/
+/* no transmissor e no receptor.                        */
+const byte endereco[6] = "00001";
+/* Inclui a biblioteca para controle do módulo rádio.   */
+#include <RF24.h>
+/* Inclui a biblioteca para controle dos servomotores.  */
+#include <Servo.h>
+/* Define os pinos de comunicação do módulo rádio.      */
+#define CSN 10
+#define CE 9
+/* Criamos um objeto de controle para o rádio.          */
+RF24 radio(CE, CSN);
+/* Variável que receberá os comandos do controle.       */
+char comando = ' ';
+/* Variável que determinará qual servomotor controlar.  */
+char escolha;
+/* Constante que determinará o incremento do ângulo.    */
+const int incremento = 1;
+/* Define os ângulos iniciais dos servomotores.         */
+int angBase = 90;
+int angDir = 90;
+int angEsq = 90;
+int angGuarra = 90;
+/* Criando objetos de controle dos servomotores.        */
+Servo servo_b;
+Servo servo_d;
+Servo servo_e;
+Servo servo_g;
+
+void setup() {
+  /* Inicia o monitor serial na velocidade 9600 bauds.  */
+  Serial.begin(9600);
+  /* Inicia o objeto de controle do rádio.              */
+  radio.begin();
+  /* Configura o canal 1 de recepção (0 a 5). Restringe */
+  /* que o canal só receberá dados deste endereço.      */
+  radio.openReadingPipe(1, endereco);
+  /* Configura o nível de potência do módulo radio.     */
+  /* RF24_PA_MIN: Nível mínimo de potência.             */
+  /* RF24_PA_LOW: Nível de potência baixo.              */
+  /* RF24_PA_HIGH: Nível de potência alto.              */
+  /* RF24_PA_MAX: Nível máximo de potência.             */
+  radio.setPALevel(RF24_PA_MIN);
+  /* Coloca o módulo no modo de escuta, ou seja, no     */
+  /* modo de recepção de dados.                         */
+  radio.startListening();
+  /* Definindo as portas dos servomotores.              */
+  servo_b.attach(4);
+  servo_d.attach(5);
+  servo_e.attach(6);
+  servo_g.attach(7);
+  /* Posiciona os servomotores nos ângulos iniciais.    */
+  servo_b.write(angBase);
+  servo_d.write(angDir);
+  servo_e.write(angEsq);
+  servo_g.write(angGuarra);
+}
+
+void loop() {
+  /* Se o módulo rádio receber algum dado, faça...      */
+  if (radio.available()) {
+    /* Armazena os dados recebidos na variável comando. */
+    radio.read(&comando, sizeof(comando));
+    /* Imprime no monitor serial o comando recebido.    */
+    Serial.println("Comando recebido: " + String(comando));
+  }
+  /* Se o comando recebido for G, faça...               */
+  if (comando == 'G') {
+    /* Defina a variável escolha como G.                */
+    escolha = 'G';
+  }
+  /* Senão, se o comando recebido for D, faça...        */
+  else if (comando == 'D') {
+    /* Defina a variável escolha como D.                */
+    escolha = 'D';
+  }
+  /* Senão, se o comando recebido for B, faça...        */
+  else if (comando == 'B') {
+    /* Defina a variável escolha como B.                */
+    escolha = 'B';
+  }
+  /* Senão, se o comando recebido for E, faça...        */
+  else if (comando == 'E') {
+    /* Defina a variável escolha como E.                */
+    escolha = 'E';
+  }
+  /* Função switch case que determinará o modo de       */
+  /* operação do braço robótico de acordo com a         */
+  /* variável escolha.                                  */
+  /* No modo G será controlado o Servo da Garra.        */
+  /* No modo D será controlado o Servo da Direita.      */
+  /* No modo B será controlado o Servo da Base.         */
+  /* No modo E será controlado o Servo da Esquerda.     */
+  switch (escolha) {
+    /* Caso a escolha for G.                            */
+    case 'G':
+      /* Se o joystick for deslocado para a esquerda e  */
+      /* o ângulo do servo da garra for menor que 100°, */
+      /* abrirá a garra.                                */
+      if (comando == 'x' && angGuarra < 100) {
+        /* Posiciona o servo no ângulo atual            */
+        servo_g.write(angGuarra);
+        /* Incrementa o valor do ângulo.                */
+        angGuarra = angGuarra + incremento;
+        /* Aguarda 50 milissegundos para atualizar o    */
+        /* ângulo.                                      */
+        delay(50);
+      }
+      /* Se o joystick for deslocado para a direita e   */
+      /* o ângulo do servo da garra for maior que 60°,  */
+      /* fechará a garra.                               */
+      if (comando == 'X' && angGuarra > 60) {
+        /* Posiciona o servo no ângulo atual.           */
+        servo_g.write(angGuarra);
+        /* Decrementa o valor do ângulo.                */
+        angGuarra = angGuarra - incremento;
+        /* Aguarda 50 milissegundos para atualizar o    */
+        /* ângulo.                                      */
+        delay(50);
+      }
+      /* Final desse caso.                              */
+      break;
+    /* Caso a escolha for D.                            */
+    case 'D':
+      /* Se o joystick for deslocado para frente e o    */
+      /* ângulo do servo da direita for menor que 180°, */
+      /* abaixará o braço.                              */
+      if (comando == 'Y' && angDir < 180) {
+        /* Posiciona o servo no ângulo atual.           */
+        servo_d.write(angDir);
+        /* Incrementa o valor do ângulo.                */
+        angDir = angDir + incremento;
+        /* Aguarda 50 milissegundos para atualizar o    */
+        /* ângulo.                                      */
+        delay(50);
+      }
+      /* Se o joystick for deslocado para trás e o      */
+      /* ângulo do servo da direita for maior que 50º,  */
+      /* levantará o braço.                             */
+      if (comando == 'y' && angDir > 50) {
+        /* Posiciona o servo no ângulo atual.           */
+        servo_d.write(angDir);
+        /* Decrementa o valor do ângulo.                */
+        angDir = angDir - incremento;
+        /* Aguarda 50 milissegundos para atualizar o    */
+        /* ângulo.                                      */
+        delay(50);
+      }
+      /* Final desse caso.                              */
+      break;
+    /* Caso a escolha for B.                            */
+    case 'B':
+      /* Se o joystick for deslocado para a esquerda e  */
+      /* o ângulo do servo da base for menor que 180°,  */
+      /* o braço girará no sentido horário.             */
+      if (comando == 'x' && angBase < 180) {
+        /* Posiciona o servo no ângulo atual.           */
+        servo_b.write(angBase);
+        /* Incrementa o valor do ângulo.                */
+        angBase = angBase + incremento;
+        /* Aguarda 50 milissegundos para atualizar o    */
+        /* ângulo.                                      */
+        delay(50);
+      }
+      /* Se o joystick for deslocado para a direita e   */
+      /* o ângulo do servo da base for maior que 0°, o  */
+      /* braço girará no sentido anti-horário.          */
+      if (comando == 'X' && angBase > 0) {
+        /* Posiciona o servo no ângulo atual.           */
+        servo_b.write(angBase);
+        /* Decrementa o valor do ângulo.                */
+        angBase = angBase - incremento;
+        /* Aguarda 50 milissegundos para atualizar o    */
+        /* ângulo.                                      */
+        delay(50);
+      }
+      /* Final desse caso.                              */
+      break;
+    /* Caso a escolha for E.                            */
+    case 'E':
+      /* Se o joystick for deslocado para frente e o    */
+      /* ângulo do servo da esquerda for menor que 180°,*/
+      /* levantará o antebraço.                         */
+      if (comando == 'Y' && angEsq < 180) {
+        /* Posiciona o servo no ângulo atual.           */
+        servo_e.write(angEsq);
+        /* Incrementa o valor do ângulo.                */
+        angEsq = angEsq + incremento;
+        /* Aguarda 50 milissegundos para atualizar o    */
+        /* ângulo.                                      */
+        delay(50);
+      }
+      /* Se o joystick for deslocado para trás e o      */
+      /* ângulo do servo da esquerda for maior que 90°, */
+      /* abaixará o antebraço.                          */
+      if (comando == 'y' && angEsq > 90) {
+        /* Posiciona o servo no ângulo atual.           */
+        servo_e.write(angEsq);
+        /* Decrementa o valor do ângulo.                */
+        angEsq = angEsq - incremento;
+        /* Aguarda 50 milissegundos para atualizar o    */
+        /* ângulo.                                      */
+        delay(50);
+      }
+      /* Final desse caso.                              */
+      break;
+  }
+}
