@@ -1,0 +1,78 @@
+/************************************************************/
+/* Tema – Projeto Chat via RF                            */
+/* Nessa programação criaremos um chat via RF.              */
+/* IMPORTANTE!: Para que não ocorra interferência entre     */
+/* os prototipos de outras duplas, você e seu amigo deverão */
+/* informar na linha 15 deste código, a mesma velocidade de */
+/* comunicação: 2000, 2100, 2200, 2300, etc...              */
+/* Links para obtenção da biblioteca by Mike McCauley.      */
+/* http://librarymanager/All#RadioHead#Provides             */
+/* http://www.airspayce.com/mikem/arduino/RadioHead/        */
+/************************************************************/
+/* Inclui as bibliotecas de controle do módulo RF 433MHz.   */
+#include <RH_ASK.h>
+/* Definições para o controle do módulo rádio.              */
+/* Sugestões de velocidade: 2000, 2100, 2200, 2300, etc.    */
+#define velocidade 2000
+#define pinoRX 8
+#define pinoTX 7
+/* Cria o objeto de controle "radio".                       */
+RH_ASK radio(velocidade, pinoRX, pinoTX);
+
+void setup() {
+  /* Inicia o monitor serial com velocidade 9600.           */
+  Serial.begin(9600);
+  /* Inicia o objeto rádio.                                 */
+  radio.init();
+}
+
+void loop() {
+  /**********************************************************/
+  /*        Programação para o envio de mensagens           */
+  /**********************************************************/
+  /* Se receber algo pela serial, faça...                   */
+  if (Serial.available() > 0) {
+    /* Variável que irá guardar a mensagem a ser enviada.   */
+    String msg_a_enviar = "";
+    /* Variável que armazenará os caracteres da mensagem.   */
+    char caractere;
+    /* Enquanto receber algo pela serial, faça...           */
+    while (Serial.available() > 0) {
+      /* Guarda cada caractere capturado da serial.         */
+      caractere = Serial.read();
+      /* Se o caractere NÃO for uma quebra de linha, faça...*/
+      if (caractere != '\n') {
+        /* Concatena cada caractere na variável.            */
+        msg_a_enviar += caractere;
+      }
+      /* Pequena pausa antes de ler o próximo caractere.    */
+      delay(10);
+    }
+    Serial.println("Você: " + msg_a_enviar);
+    /* Converte a String para bytes e envia através do rádio.*/
+    radio.send((uint8_t *)msg_a_enviar.c_str(), msg_a_enviar.length());
+    /* Aguarda o tempo necessário para o envio.              */
+    radio.waitPacketSent();
+  }
+  /***********************************************************/
+
+  /***********************************************************/
+  /*       Programação para o recebimento de mensagens       */
+  /***********************************************************/
+  /* Recebe a mensagem com o máximo de 60 caracteres.        */
+  uint8_t buf[RH_ASK_MAX_MESSAGE_LEN];
+  /* Determina o comprimento da mensagem recebida.           */
+  uint8_t buflen = sizeof(buf);
+  /* Se recebeu corretamente a mensagem, faça...             */
+  if (radio.recv(buf, &buflen)) {
+    /* Define a variável para receber a mensagem completa.   */
+    String msg_recebida = "";
+    /* Loop para montar a palavra letra por letra.           */
+    for (int i = 0; i < buflen; i++) {
+      msg_recebida += (char)buf[i];
+    }
+    /* Imprime no monitor serial a mensagem recebida.        */
+    Serial.println("Amigo(a): " + String(msg_recebida));
+  }
+  /***********************************************************/
+}
