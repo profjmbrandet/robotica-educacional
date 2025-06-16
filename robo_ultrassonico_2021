@@ -1,0 +1,86 @@
+/*************************************************************/
+/* Tema - Robô Ultrassônico                                  */
+/* Programação do projeto robô ultrassônico.                 */
+/* Ao transferir o código abaixo para seu Arduino, o robô    */
+/* será capaz de de mover para frente e ao se aproximar de   */
+/* obstáculo, irá realizar uma manobra para desviá-lo.       */
+/* Links para obtenção da biblioteca by Adafruit             */
+/* http://librarymanager/All#Motor#Shield#Motor#Adafruit#V1  */
+/* https://github.com/adafruit/Adafruit-Motor-Shield-library */
+/* Links para obtenção da biblioteca by Erick Simões         */
+/* http://librarymanager/All#minimalist#Ultrasonic           */
+/* https://github.com/ErickSimoes/Ultrasonic                 */
+/*************************************************************/
+
+/* Inclui a Biblioteca AFMotor para controle do motor.       */
+#include <AFMotor.h>
+#include <Ultrasonic.h>
+/* Define os pinos para o sensor ultrassônico.               */
+#define pino_Trig 10
+#define pino_Echo 9
+/* Define a potência dos motores: 0 a 255.                   */
+int potencia = 200;
+
+/* Cria os objetos de controle para os motores               */
+/* conectados nas saídas M2 e M3 da Motor Shield.            */
+AF_DCMotor motor2(2);
+AF_DCMotor motor3(3);
+
+/* Cria o objeto Sensor que realizará a leitura do sensor.   */
+Ultrasonic Sensor(pino_Trig, pino_Echo);
+/* Variável que armazenará as medidas.                       */
+int distancia;
+
+void setup() {
+  /* Inicia com os motores parados.                          */
+  motor2.run(RELEASE);
+  motor3.run(RELEASE);
+  /* Espera 3 segundos para iniciar o movimento do robô.     */
+  delay(3000);
+}
+/* Função que move o robô para Frente.                       */
+void frente(int potencia) {
+  /* Define a velocidade dos motores.                        */
+  motor2.setSpeed(potencia);
+  motor3.setSpeed(potencia);
+  /* Aciona os Motores para frente.                          */
+  motor2.run(FORWARD);
+  motor3.run(FORWARD);
+}
+/* Função que manobra o robô com 80% de sua velocidade.      */
+void manobra(int potencia) {
+  motor2.setSpeed(potencia * 0.8);
+  motor3.setSpeed(potencia * 0.8);
+  /* Para os Motores.                                        */
+  motor2.run(RELEASE);
+  motor3.run(RELEASE);
+  delay(500);
+  /* Gira no sentido horário.                                */
+  motor2.run(FORWARD);
+  motor3.run(BACKWARD);
+  delay(1000);
+  /* Para os Motores.                                        */
+  motor2.run(RELEASE);
+  motor3.run(RELEASE);
+  delay(500);
+}
+
+void loop() {
+  /* Armazena a distância na variável "distancia".           */
+  distancia = Sensor.read();
+  /* Pequeno delay para receber os dados do sensor.          */
+  delay(10);
+  /* Se a distância for menor ou igual a 40cm, realize a     */
+  /* manobra do robô.                                        */
+  if (distancia <= 40)
+  {
+    /* Chama a função responsável pela manobra.              */
+    manobra(potencia);
+  }
+  /* Senão siga em frente.                                   */
+  else
+  {
+    /* Chama a função mover para frente.                     */
+    frente(potencia);
+  }
+}
