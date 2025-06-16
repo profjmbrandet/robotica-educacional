@@ -1,0 +1,117 @@
+/************************************************************/
+/* Tema - Robô Wireless                                  */
+/* Programação da placa Arduino.                            */
+/* Este programa faz seu robô se mover com comandos         */
+/* recebidos de um dispositivo conectado à sua rede         */
+/* wireless. Os comandos que o robô irá receber serão:      */
+/* Mover para frente, mover para trás, girar no sentido     */
+/* horário e girar no sentido anti-horário.                 */
+/************************************************************/
+
+/* Inclui a biblioteca para a comunicação serial.           */
+#include <SoftwareSerial.h>
+
+/* Cria o objeto espSerial especificando as portas de       */
+/* comunicação.                                             */
+SoftwareSerial espSerial(2, 3);
+
+/* Definições dos pinos IN1 a IN4 da ponte H.               */
+/* Para controlar a velocidade dos motores, esses pinos     */
+/* deverão ser conectados em portas com o recurso PWM.      */
+#define IN1 10  // Porta PWM ~10
+#define IN2 9   // Porta PWM ~9
+#define IN3 6   // Porta PWM ~6
+#define IN4 5   // Porta PWM ~5
+
+/* Variáveis que definem as potências dos motores (0 a 255).  */
+int potA = 255;
+int potB = 255;
+
+/* Variáveis que definem as potências de manobra dos motores (0 a 255).  */
+int pot_manobra = 150;
+
+/* Variável que receberá os comandos do controle.          */
+char codigo;
+
+/* Criando as funções de controle dos motores.              */
+
+/* Move para frente.                                        */
+void Frente() {
+  /* Motor A */
+  analogWrite(IN1, potA);
+  analogWrite(IN2, 0);
+  /* Motor B */
+  analogWrite(IN3, potB);
+  analogWrite(IN4, 0);
+}
+
+/* Move para trás.                                         */
+void Re() {
+  /* Motor A */
+  analogWrite(IN1, 0);
+  analogWrite(IN2, potA);
+  /* Motor B */
+  analogWrite(IN3, 0);
+  analogWrite(IN4, potB);
+}
+
+/* Giro no sentido horário.                               */
+void GiroHorario() {
+  /* Motor A */
+  analogWrite(IN1, pot_manobra);
+  analogWrite(IN2, 0);
+  /* Motor B */
+  analogWrite(IN3, 0);
+  analogWrite(IN4, pot_manobra);
+}
+
+/* Giro no sentido anti-horário.                         */
+void GiroAntiHorario() {
+  /* Motor A */
+  analogWrite(IN1, 0);
+  analogWrite(IN2, pot_manobra);
+  /* Motor B */
+  analogWrite(IN3, pot_manobra);
+  analogWrite(IN4, 0);
+}
+
+/* Para o chassi.                                       */
+void Pare() {
+  /* Motor A */
+  analogWrite(IN1, 0);
+  analogWrite(IN2, 0);
+  /* Motor B */
+  analogWrite(IN3, 0);
+  analogWrite(IN4, 0);
+}
+
+void setup() {
+  Serial.begin(9600);
+  espSerial.begin(9600);
+  /* Inicia com os motores parados.                            */
+  Pare();
+  delay(2000);
+}
+void loop() {
+  if (espSerial.available()) {
+    codigo = espSerial.read();
+    Serial.println(codigo);
+    switch (codigo) {
+      case '1':
+        Frente();
+        break;
+      case '2':
+        GiroAntiHorario();
+        break;
+      case '3':
+        GiroHorario();
+        break;
+      case '4':
+        Re();
+        break;
+      case '0':
+        Pare();
+        break;
+    }
+  }
+}
