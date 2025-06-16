@@ -1,0 +1,158 @@
+/********************************************************/
+/* Tema - Controle Motor DC                             */
+/* Programação: Nesta programação controlamos dois      */
+/* motores DC utilizando a placa Motor Driver L298N.    */
+/********************************************************/
+
+/* Definições dos pinos IN1 a IN4 da ponte H.           */
+/* Para controlar a velocidade dos motores, esses pinos */
+/* deverão ser conectados em portas com o recurso PWM.  */
+#define IN1 10 // Porta PWM ~10
+#define IN2 9  // Porta PWM ~9
+#define IN3 6  // Porta PWM ~6
+#define IN4 5  // Porta PWM ~5
+
+/* Criando as funções de controle dos motores.          */
+
+/* Mover para frente.                                   */
+void Frente(int velocidade) {
+  /* Motor A */
+  analogWrite(IN1, velocidade);
+  analogWrite(IN2, 0);
+  /* Motor B */
+  analogWrite(IN3, velocidade);
+  analogWrite(IN4, 0);
+}
+
+/* Mover para trás.                                    */
+void Tras(int velocidade) {
+  /* Motor A */
+  analogWrite(IN1, 0);
+  analogWrite(IN2, velocidade);
+  /* Motor B */
+  analogWrite(IN3, 0);
+  analogWrite(IN4, velocidade);
+}
+
+/* Giro horário.                                       */
+void GiroHorario(int velocidade) {
+  /* Motor A */
+  analogWrite(IN1, 0);
+  analogWrite(IN2, velocidade);
+  /* Motor B */
+  analogWrite(IN3, velocidade);
+  analogWrite(IN4, 0);
+}
+
+/* Giro anti-horário.                                  */
+void GiroAntiHorario(int velocidade) {
+  /* Motor A */
+  analogWrite(IN1, velocidade);
+  analogWrite(IN2, 0);
+  /* Motor B */
+  analogWrite(IN3, 0);
+  analogWrite(IN4, velocidade);
+}
+
+/* Pare.                                              */
+void Pare() {
+  /* Motor A */
+  analogWrite(IN1, 0);
+  analogWrite(IN2, 0);
+  /* Motor B */
+  analogWrite(IN3, 0);
+  analogWrite(IN4, 0);
+}
+
+void setup() {
+  /* Inicia com os motores parados.                    */
+  Pare();
+}
+
+void loop() {
+  /* Aciona os Motores para frente com velocidade 255. */
+  Frente(255);
+  /* Aguarda 2 segundos.                               */
+  delay(2000);
+
+  /* Para os Motores.                                  */
+  Pare();
+  /* Aguarda 0,5 segundos.                             */
+  delay(500);
+
+  /* Aciona os Motores para trás com velocidade 255.   */
+  Tras(255);
+  /* Aguarda 2 segundos.                               */
+  delay(2000);
+
+  /* Para os Motores.                                  */
+  Pare();
+  /* Aguarda 0,5 segundos.                             */
+  delay(500);
+
+  /* Aciona o giro no sentido horário com velocidade 255.      */
+  GiroHorario(255);
+  /* Aguarda 2 segundos.                                       */
+  delay(2000);
+
+  /* Para os Motores.                                          */
+  Pare();
+  /* Aguarda 0,5 segundos.                                     */
+  delay(500);
+
+  /* Aciona o giro no sentido anti-horário com velocidade 255. */
+  GiroAntiHorario(255);
+  /* Aguarda 2 segundos.                                       */
+  delay(2000);
+
+  /* Para os Motores.                                          */
+  Pare();
+  /* Aguarda 0,5 segundos.                                     */
+  delay(500);
+
+  /* Acelera os motores de 0 a 255 para frente.                */
+  for (int i = 0; i <= 255; i++) {
+    Frente(i);
+    delay(50);
+  }
+  /* Desacelera os motores de 255 a 0 para frente.             */
+  for (int i = 255; i >= 0; i--) {
+    Frente(i);
+    delay(50);
+  }
+
+  /* Para os Motores.                                          */
+  Pare();
+  /* Aguarda 0,5 segundos.                                     */
+  delay(500);
+
+  /* Mover apenas o motor A com velocidade 200.                */
+  /* Motor A. */
+  analogWrite(IN1, 200);
+  analogWrite(IN2, 0);
+  /* Motor B. */
+  analogWrite(IN3, 0);
+  analogWrite(IN4, 0);
+  /* Aguarda 2 segundos.                                       */
+  delay(2000);
+
+  /* Para os Motores.                                          */
+  Pare();
+  /* Aguarda 0,5 segundos.                                     */
+  delay(500);
+
+  /* Mover apenas o motor B com velocidade 200.                */
+  /* Motor A. */
+  analogWrite(IN1, 0);
+  analogWrite(IN2, 0);
+  /* Motor B. */
+  analogWrite(IN3, 200);
+  analogWrite(IN4, 0);
+  /* Aguarda 2 segundos.                                       */
+  delay(2000);
+
+  /* Para os Motores.                                          */
+  Pare();
+  /* Aguarda 0,5 segundos.                                     */
+  delay(500);
+}
