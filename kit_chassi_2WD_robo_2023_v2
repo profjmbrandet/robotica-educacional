@@ -1,0 +1,133 @@
+/********************************************************/
+/* Tema - Kit Chassi 2WD com ponte H - Robô             */
+/* Programação: Nesta programação controlamos dois      */
+/* motores DC utilizando a placa Motor Driver L298N.    */
+/* para mover o robô em todas as direções possíveis.    */
+/********************************************************/
+
+/* Definições dos pinos IN1 a IN4 da ponte H.           */
+/* Para controlar a velocidade dos motores, esses pinos */
+/* deverão ser conectados em portas com o recurso PWM.  */
+#define IN1 10 // Porta PWM ~10
+#define IN2 9  // Porta PWM ~9
+#define IN3 6  // Porta PWM ~6
+#define IN4 5  // Porta PWM ~5
+
+/* Criando as funções de controle dos motores.          */
+
+/* Move para frente.                                    */
+void Frente(int Vel_A, int Vel_B) {
+  /* Motor A */
+  analogWrite(IN1, Vel_A);
+  analogWrite(IN2, 0);
+  /* Motor B */
+  analogWrite(IN3, Vel_B);
+  analogWrite(IN4, 0);
+}
+
+/* Move para trás.                                      */
+void Re(int Vel_A, int Vel_B) {
+  /* Motor A */
+  analogWrite(IN1, 0);
+  analogWrite(IN2, Vel_A);
+  /* Motor B */
+  analogWrite(IN3, 0);
+  analogWrite(IN4, Vel_B);
+}
+
+/* Giro no sentido horário.                             */
+void GiroHorario(int Vel_A, int Vel_B) {
+  /* Motor A */
+  analogWrite(IN1, Vel_A);
+  analogWrite(IN2, 0);
+  /* Motor B */
+  analogWrite(IN3, 0);
+  analogWrite(IN4, Vel_B);
+}
+
+/* Giro no sentido anti-horário.                        */
+void GiroAntiHorario(int Vel_A, int Vel_B) {
+  /* Motor A */
+  analogWrite(IN1, 0);
+  analogWrite(IN2, Vel_A);
+  /* Motor B */
+  analogWrite(IN3, Vel_B);
+  analogWrite(IN4, 0);
+}
+
+/* Para o chassi.                                       */
+void Pare() {
+  /* Motor A */
+  analogWrite(IN1, 0);
+  analogWrite(IN2, 0);
+  /* Motor B */
+  analogWrite(IN3, 0);
+  analogWrite(IN4, 0);
+}
+
+void setup() {
+  /* Inicia com os motores parados.                     */
+  Pare();
+  /* Aguarda 3 segundos antes de começar os movimentos. */
+  delay(3000);
+}
+
+void loop() {
+  /* Move o chassi para frente com velocidades          */
+  /* definidas durante 1 segundo.                       */
+  /* Frente(VelocidadeA, VelocidadeB);                  */
+  Frente(180, 180);
+  delay(1000);
+  /* Para o chassi por meio segundo.                    */
+  Pare();
+  delay(500);
+
+  /* Move o chassi para trás com velocidades            */
+  /* definidas durante 1 segundo.                       */
+  /* Re(VelocidadeA, VelocidadeB);                      */
+  Re(180, 180);
+  delay(1000);
+  /* Para o chassi por meio segundo.                    */
+  Pare();
+  delay(500);
+
+  /* Gira o chassi em torno do dentro do eixo no        */
+  /* sentido anti-horário com velocidades definidas     */
+  /* durante 1 segundo.                                 */
+  /* GiroAntiHorario(VelocidadeA, VelocidadeB);         */
+  GiroAntiHorario(150, 150);
+  delay(1000);
+  /* Para o chassi por meio segundo.                    */
+  Pare();
+  delay(500);
+
+  /* Gira o chassi em torno do dentro do eixo no        */
+  /* sentido horário com velocidades definidas durante  */
+  /* 1 segundo.                                         */
+  /* GiroHorario(VelocidadeA, VelocidadeB);             */
+  GiroHorario(150, 150);
+  delay(1000);
+  /* Para o chassi por meio segundo.                    */
+  Pare();
+  delay(500);
+
+  /* Gira o chassi em torno da roda A (esquerda) no     */
+  /* sentido anti-horário com velocidades definidas     */
+  /* durante 1 segundo.                                 */
+  /* GiroAntiHorario(VelocidadeA, VelocidadeB);         */
+  GiroAntiHorario(0, 150);
+  delay(1000);
+  /* Para o chassi por meio segundo.                    */
+  Pare();
+  delay(500);
+
+  /* Gira o chassi em torno da roda B (direita) no      */
+  /* sentido horário com velocidades definidas durante  */
+  /* 1 segundo.                                         */
+  /* GiroHorario(VelocidadeA, VelocidadeB);             */
+  GiroHorario(150, 0);
+  delay(1000);
+  /* Para o chassi por cinco segundos.                  */
+  Pare();
+  delay(5000);
+}
