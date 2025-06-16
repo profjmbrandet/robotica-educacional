@@ -1,0 +1,153 @@
+/***************************************************************/
+/* Tema - Semáforo Completo com Display. */
+/* Programação do semáforo completo com display de 7 segmentos */
+/* com um dígito. Seu funcionamento consiste em alterar seu */
+/* modo de operação assim que o botão for pressionado e, */
+/* durante o período de travessia, o display irá iniciar uma */
+/* contagem regressiva, informando */
+/* o tempo restante. Neste código, */
+/* utilizamos a função de interrupção (attachInterrupt). */
+/* Para saber mais sobre a função acesse:             */
+/* https://www.arduino.cc/reference/pt/language/functions/external-interrupts/attachinterrupt/ */
+/***************************************************************/
+
+/* ATENÇÃO! De acordo com o modelo de seu Display 7 Segmentos, */
+/* descomente uma das duas linhas abaixo. */
+//String modelo = "ânodo comum"; /* Display de Ânodo Comum. */
+//String modelo = "cátodo comum"; /* Display de Cátodo Comum. */
+
+/* Definições das portas utilizadas. */
+#define botao 2
+#define LED_VERDE_CAR 0
+#define LED_AMARELO_CAR 1
+#define LED_VERMELHO_CAR 3
+#define LED_VERDE_PED 4
+#define LED_VERMELHO_PED 5
+/*
+  Variável que seleciona o modo de operação do semáforo
+  0 - Modo aberto para carros;
+  1 - Modo aberto para pedestres;
+*/
+int modo = 0;
+/* Variável matricial que armazena os estados de cada segmento*/
+/* do display para cada dígito. */
+/*
+  --- 13 ----
+  |          |
+  10        12
+  |          |
+  ---- 11 ----
+  |          |
+  8          7
+  |          |
+  ---- 9 ----
+  {c, e, d, f, g, b, a} Segmentos
+  {7, 8, 9, 10, 11, 12, 13} Portas
+*/
+bool displaySeteSeg[10][7] = {
+  { 1, 1, 1, 1, 0, 1, 1 }, //DIGITO 0
+  { 1, 0, 0, 0, 0, 1, 0 }, //DIGITO 1
+  { 0, 1, 1, 0, 1, 1, 1 }, //DIGITO 2
+  { 1, 0, 1, 0, 1, 1, 1 }, //DIGITO 3
+  { 1, 0, 0, 1, 1, 1, 0 }, //DIGITO 4
+  { 1, 0, 1, 1, 1, 0, 1 }, //DIGITO 5
+  { 1, 1, 1, 1, 1, 0, 1 }, //DIGITO 6
+  { 1, 0, 0, 0, 0, 1, 1 }, //DIGITO 7
+  { 1, 1, 1, 1, 1, 1, 1 }, //DIGITO 8
+  { 1, 0, 1, 1, 1, 1, 1 } //DIGITO 9
+};
+void setup() {
+  /* Loop para configurar os pinos como saída. */
+  for (int i = 0; i <= 13; i++) {
+    pinMode(i, OUTPUT);
+  }
+  /* Configuramos o pino do botão como entrada. */
+  pinMode(botao, INPUT);
+  /* Ativa a função de interrupção no pino que o botão está */
+  /* conectado. */
+  attachInterrupt(digitalPinToInterrupt(botao), botaoAcionado, FALLING);
+  /* Comando para o Display de Ânodo Comum iniciar desligado. */
+  if (modelo == "ânodo comum") {
+    for (int i = 7; i <= 13; i++) {
+      digitalWrite(i, HIGH);
+    }
+  }
+}
+void loop() {
+  switch (modo) {
+    case 0:
+      /* Caso o botão não for pressionado mantém o semáforo aberto */
+      /* para os carros chamando a função "carros()". */
+      carros();
+      break;
+    case 1:
+      /* Caso o botão seja pressionado, o semáforo entrará no modo */
+      /* de travessia chamando a função "travessia()". */
+      travessia();
+      modo = 0;
+      break;
+  }
+}
+/* Após pressionar o botão, será executada essa função, */
+/* selecionando o modo de operação do semáforo. */
+void botaoAcionado() {
+  modo = 1;
+}
+/* Função que mantém o semáforo aberto para os carros. */
+void carros() {
+  digitalWrite(LED_VERDE_CAR, HIGH);
+  digitalWrite(LED_VERMELHO_PED, HIGH);
+  digitalWrite(LED_VERMELHO_CAR, LOW);
+  /* Desliga o display. */
+  if (modelo == "ânodo comum") {
+    for (int i = 7; i <= 13; i++) {
+      digitalWrite(i, HIGH);
+    }
+  } else {
+    for (int i = 7; i <= 13; i++) {
+      digitalWrite(i, LOW);
+    }
+  }
+}
+/* Função que controla o semáforo para a travessia de */
+/* pedestre. */
+void travessia() {
+  /* Aguarda 1 segundo para entrar no modo travessia. */
+  delay(1000);
+  /* Aciona o amarelo do semáforo dos carros. */
+  digitalWrite(LED_VERDE_CAR, LOW);
+  digitalWrite(LED_AMARELO_CAR, HIGH);
+  delay(3000);
+  /* Aciona vermelho para os carros e verde para pedestre. */
+  digitalWrite(LED_AMARELO_CAR, LOW);
+  digitalWrite(LED_VERMELHO_CAR, HIGH);
+  digitalWrite(LED_VERDE_PED, HIGH);
+  digitalWrite(LED_VERMELHO_PED, LOW);
+  /* Inicia a contagem de 9 a 0 para a travessia. */
+  boolean led = HIGH;
+  for (int contador = 9; contador >= 0; contador--) {
+    /* Chama a função para acionar o display. */
+    ligaSegmentosDisplay(contador);
+    if (contador <= 6) {
+      digitalWrite(LED_VERDE_PED, LOW);
+      digitalWrite(LED_VERMELHO_PED, led);
+      led = !led;
+    }
+  }
+}
+/* Função para acionar o display com o dígito correspondente. */
+void ligaSegmentosDisplay(int digito) {
+  byte pino = 7;
+  for (byte contadorSegmentos = 0; contadorSegmentos <= 6; ++contadorSegmentos) {
+    if (modelo == "ânodo comum") {
+      // displaySeteSeg[linha][coluna]
+      digitalWrite(pino, !displaySeteSeg[digito][contadorSegmentos]);
+    } else {
+      digitalWrite(pino, displaySeteSeg[digito][contadorSegmentos]);
+    }
+    /* Incrementa o valor do pino (vai de 7 a 13). */
+    pino++;
+  }
+  /* Aguarda 1 segundo para reiniciar a contagem. */
+  delay(1000);
+}
