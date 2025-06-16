@@ -1,0 +1,104 @@
+/***********************************************************************/
+/* Tema - Termômetro Digital                                           */
+/* Programação do Termômetro Digital.                                  */
+/* Ao transferir o código abaixo para seu Arduino, o sensor de umidade */
+/* e temperatura DHT11 irá monitorar as condições do ambiente e enviará*/
+/* dados analógicos ao Arduino, e com o auxílio da biblioteca DHT,     */
+/* obterá as informações de umidade e temperatura que serão exibidas no*/
+/* display OLED.                                                       */
+/*                                                                     */
+/* Links para obtenção das bibliotecas DHT by Adafruit.                */
+/* http://librarymanager/All#DHT11#DHT22                               */
+/* https://github.com/adafruit/DHT-sensor-library                      */
+/* https://github.com/adafruit/Adafruit_Sensor                         */
+/*                                                                     */
+/* Links para obtenção da biblioteca SSD1306 by Adafruit.              */
+/* https://github.com/adafruit/Adafruit_SSD1306                        */
+/* http://librarymanager/All#SSD1306#Adafruit                          */
+/*                                                                     */
+/* Links para obtenção da biblioteca GFX by Adafruit.                  */
+/* https://github.com/adafruit/Adafruit-GFX-Library                    */
+/* http://librarymanager/All#GFX#class#that                            */
+/*                                                                     */
+/***********************************************************************/
+/*                        Termômetro digital                           */
+/***********************************************************************/
+/* Inclusão das duas bibliotecas necessárias.                          */
+#include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
+#include <DHT.h>
+
+/* Cria o objeto de controle display para controle do display OLED.    */
+/*            display(n°colunas, n° linhas, protocolo de comunicação); */
+Adafruit_SSD1306 oled(128, 64, &Wire);
+/* Cria o objeto de controle dht para controle do sensor DHT11.        */
+/*  dht(porta de leitura, modelo do sensor);                           */
+DHT dht(A0, DHT11);
+
+void setup() {
+  /* Inicializa o objeto de controle do sensor DHT11.                  */
+  dht.begin();
+  /* Inicializa o objeto de controle do display OLED.                  */
+  oled.begin(SSD1306_SWITCHCAPVCC, 0X3C);
+  /* Limpa o display OLED.                                             */
+  oled.clearDisplay();
+  /* Define a cor da fonte: Claro (WHITE) - Escuro (BLACK).            */
+  oled.setTextColor(WHITE);
+}
+
+void loop() {
+  /* Inicializa criando uma tabela para exibir os dados.               */
+  oled.drawLine(0, 0, 127, 0, WHITE);    /* Linha superior.            */
+  oled.drawLine(0, 0, 0, 63, WHITE);     /* Linha esquerda.            */
+  oled.drawLine(127, 0, 127, 63, WHITE); /* Linha direita.             */
+  oled.drawLine(0, 63, 127, 63, WHITE);  /* Linha inferior.            */
+  oled.drawLine(0, 31, 127, 31, WHITE);  /* Linha central.             */
+
+  /* Realiza a leitura do sensor e armazena os dados nas variáveis.    */
+  String T = String(dht.readTemperature(), 1);
+  String H = String(dht.readHumidity(), 0);
+
+  /* Impressão da informação de temperatura.                           */
+
+  /* Posiciona o cursor na coordenada x e y informada.                 */
+  oled.setCursor(2, 2);
+  /* Define o tamanho da fonte para 1.                                 */
+  oled.setTextSize(1);
+  /* Imprime o texto a partir da posição definida acima.               */
+  oled.print("Temperatura");
+  /* Posiciona o cursor na coordenada x e y informada.                 */
+  oled.setCursor(53, 14);
+  /* Define o tamanho da fonte para 2.                                 */
+  oled.setTextSize(2);
+  /* Imprime o valor armanenado na variável T.                         */
+  oled.print(T);
+  /* Posiciona o cursor na coordenada x e y informada.                 */
+  oled.setCursor(102, 14);
+  /* Imprime o símbolo ASCII de número 247 (°).                        */
+  oled.write(247);
+  /* Posiciona o cursor na coordenada x e y informada.                 */
+  oled.setCursor(113, 14);
+  /* Imprime o texto a partir da posição definina acima.               */
+  oled.print("C");
+
+  /* Impressão da informação de umidade.                               */
+
+  /* Posiciona o cursor na coordenada x e y informada.                 */
+  oled.setCursor(2, 32);
+  /* Define o tamanho da fonte para 1.                                 */
+  oled.setTextSize(1);
+  /* Imprime o texto a partir da posição definida acima.               */
+  oled.print("Umidade");
+  /* Posiciona o cursor na coordenada x e y informada.                 */
+  oled.setCursor(68, 44);
+  /* Define o tamanho da fonte para 2.                                 */
+  oled.setTextSize(2);
+  /* Imprime o texto a partir da posição definida acima.               */
+  oled.print(H + "%");
+  /* Atualiza o display com as informações passadas acima.             */
+  oled.display();
+  /* Aguarda 2 segundos para atualizar as informações.                 */
+  delay(2000);
+  /* Limpa o display OLED.                                             */
+  oled.clearDisplay();
+}
