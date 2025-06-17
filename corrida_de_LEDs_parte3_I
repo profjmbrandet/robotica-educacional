@@ -1,0 +1,306 @@
+/* 
+   ____                     _      ______ _____    _____ 
+  / __ \                   | |    |  ____|  __ \  |  __ \ 
+ | |  | |_ __   ___ _ __   | |    | |__  | |  | | | |__) |__ _  ___ ___ 
+ | |  | | '_ \ / _ \ '_ \  | |    |  __| | |  | | |  _  // _` |/ __/ _ \ 
+ | |__| | |_) |  __/ | | | | |____| |____| |__| | | | \ \ (_| | (_|  __/ 
+  \____/| .__/ \___|_| |_| |______|______|_____/  |_|  \_\__,_|\___\___| 
+        | | 
+        |_| 
+
+Open LED Race, uma corrida de carro minimalista para fitas LED! 
+ 
+Este é um programa gratuito e você pode distribuir e/ou modificá-lo pelos 
+termos GNU Gerneral Public License (Licença Pública Geral), publicado 
+pela Free Software Foundation (Fundação de Software Gratuitos), e  
+também pela versão 3 da Licença, ou qualquer versão recente. 
+
+  por gbarbarov@singulardevices.com para Arduino day Seville 2019 
+  https://www.hackster.io/gbarbarov/open-led-race-a0331a 
+  https://twitter.com/openledrace 
+
+  Próximos melhoramentos em: 
+  https://gitlab.com/open-led-race 
+  https://openledrace.net/open-software/ 
+
+Traduzido e adaptado por Robótica Paraná. 
+
+Modelo 3D do protótipo disponível em https://sketchfab.com/3d-models/aula-21-corrida-de-leds-66d2f7a0d5c145ceb9c442621b5093e2 
+
+*/
+
+/* Inclui o preâmbulo no sketch. */
+#include "preambulo.h"
+
+void setup() {
+
+  /* Inicia o objeto da fita de LEDs. */
+  pista.begin();
+
+  /* Definimos o brilho máximo dos LEDs. (0 a 255). */
+  pista.setBrightness(BRILHO_MAX);
+
+  /* Iniciamos com todos os LEDs desligados. */
+  pista.clear();
+  /* Aplica as modificações acima. */
+  pista.show();
+
+  /* Configurações das portas dos botões como INPUT_PULLUP. */
+  pinMode(PIN_P1, INPUT_PULLUP);
+  pinMode(PIN_P2, INPUT_PULLUP);
+
+  /* Inicia com o valor de gravidade nula para todos os LEDs (127). 
+   O mapa varia de 0 a 255.
+   mapa_gravidade[i] = 127 (Aceleração da gravidade nula - Superfície plana)
+   mapa_gravidade[i] > 127 (Aceleração da gravidade positiva - Descendo a rampa)
+   mapa_gravidade[i] < 127 (Aceleração da gravidade negativa - Subindo a rampa) */
+  for (int i = 0; i < N_LEDs; i++) {
+    mapa_gravidade[i] = 127;
+  }
+
+  /* Chama a função de início da corrida. */
+  iniciar_corrida();
+}
+
+void loop() {
+
+  /* Desenhar os carros na pista. */
+
+  tempoAtual = millis();
+
+  /* Cria um controle alternado para mostrar os carros quando sobrepostos. */
+  /* Checa se decorreu pelo menos 200 milissegundos. */
+  if (tempoAtual - ultimaAlteracao >= 200) {
+    /* Se ordem_desenho for igual a 0, altera para 1. */
+    if (ordem_desenho == 0) {
+      ordem_desenho = 1;
+      /* Atualiza o valor de tempoAtual. */
+      ultimaAlteracao = tempoAtual;
+      /* Senão, ou seja, se ordem_desenho for igual a 1... */
+    } else {
+      /* ...altera para 0. */
+      ordem_desenho = 0;
+      /* Atualiza o valor de tempoAtual. */
+      ultimaAlteracao = tempoAtual;
+    }
+  }
+
+  /* Chama a função para desenhar os carros na ordem acima. */
+  if (ordem_desenho == 0) {
+    desenhar_carro1();
+    desenhar_carro2();
+  } else {
+    desenhar_carro2();
+    desenhar_carro1();
+  }
+
+  /* Aplica as modificações acima. */
+  pista.show();
+
+/* Acende os LEDs da(s) rampa(s) caso tenha habilitado. */ 
+
+  /* Habilitando: Inicie o jogo pressionando o botão P1 mantendo pressionado o P2. */ 
+  for (int i = 0; i < N_LEDs; i++) { 
+    if ((127 - mapa_gravidade[i]) != 0) { 
+      pista.setPixelColor(i, pista.Color(0, 0, 255)); 
+    } else { 
+      pista.setPixelColor(i, pista.Color(0, 0, 0)); 
+    }  
+  }
+    
+    /********** Controle do movimento do Player 1 **********/ 
+
+  /* Verifica se o botão 1 foi pressionado e solto: 
+   flag_botao1 == 0 (botão está pressionado) 
+   flag_botao1 == 1 (botão está solto) */ 
+  if ((flag_botao1 == 0) && (digitalRead(PIN_P1) == 1)) { /* Se a flag for "pressionado" e o botão solto... */ 
+    flag_botao1 = 1; /* ... altera a flag para "solto". */ 
+  } 
+  if ((flag_botao1 == 1) && (digitalRead(PIN_P1) == 0)) { /* Se a flag for "solto" e o botão pressionado... */ 
+    flag_botao1 = 0;            /* ... altera a flag para "pressionado". */ 
+    velocidade1 += ACELERACAO;  /* Aumentar a velocidade em função da aceleração. */ 
+  }  
+
+/* Diminuir a velocidade ao subir a rampa. */ 
+  if ((mapa_gravidade[(word)dist1 % N_LEDs]) < 127) { 
+    velocidade1 -= kg * (127 - (mapa_gravidade[(word)dist1 % N_LEDs])); 
+  } 
+
+  /* Aumentar a velocidade ao descer a rampa. */ 
+  if ((mapa_gravidade[(word)dist1 % N_LEDs]) > 127) { 
+    velocidade1 += kg * ((mapa_gravidade[(word)dist1 % N_LEDs]) - 127); 
+  } 
+
+  /* Aplica a desaceleração do carrinho 1 em função da constante de atrito. */ 
+  velocidade1 -= velocidade1 * kf; 
+
+  /*************************************************/ 
+
+/********** Controle do movimento do Player 2 **********/
+ /* Verifica se o botão 2 foi pressionado e solto:
+ flag_botao2 == 0 (botão está pressionado)
+ flag_botao2 == 1 (botão está solto) */
+ if ((flag_botao2 == 0) && (digitalRead(PIN_P2) == 1)) { /* Se a flag
+for “pressionado” e o botão solto... */
+ flag_botao2 = 1; /* ... altera a flag para “solto”. */
+ }
+ if ((flag_botao2 == 1) && (digitalRead(PIN_P2) == 0)) { /* Se a flag
+for “solto” e o botão pressionado... */
+ flag_botao2 = 0; /* ... altera a flag para “pressionado”. */
+ velocidade2 += ACELERACAO; /* Aumentar a velocidade em função
+da aceleração. */
+ }
+ /* Diminuir a velocidade ao subir a rampa. */
+ if ((mapa_gravidade[(word)dist2 % N_LEDs]) < 127) {
+   velocidade2 -= kg * (127 - (mapa_gravidade[(word)dist2 % N_LEDs]));
+ }
+ /* Aumentar a velocidade ao descer a rampa. */
+ if ((mapa_gravidade[(word)dist2 % N_LEDs]) > 127) {
+ velocidade2 += kg * ((mapa_gravidade[(word)dist2 % N_LEDs]) -
+127);
+ }
+ /* Aplica a desaceleração do carrinho 2 em função da constante de
+atrito. */
+ velocidade2 -= velocidade2 * kf;
+ /*************************************************/
+  
+  
+/* Registra as distâncias percorridas pelos carrinhos em função das velocidades. */ 
+  dist1 += velocidade1; 
+  dist2 += velocidade2; 
+
+  /* Verifica se o carro 1 completou a volta. */ 
+  if (dist1 > N_LEDs * n_voltas_P1) { 
+    n_voltas_P1++;                   /* Atualiza a contagem de voltas do carro 1. */ 
+    tone(PIN_AUDIO, 700, 50);  /* Toca um bip de 700Hz a cada volta completa. */ 
+    /* Define um contador para evitar o bip picotado (maior ou igual a 2). */ 
+    controle_bip = 3; 
+  } 
+
+  /* Verifica se o carro 2 completou a volta. */ 
+  if (dist2 > N_LEDs * n_voltas_P2) { 
+    n_voltas_P2++;                   /* Atualiza a contagem de voltas do carro 2. */ 
+    tone(PIN_AUDIO, 200, 50);  /* Toca um bip de 200Hz a cada volta completa. */ 
+    /* Define um contador para evitar o bip picotado (maior ou igual a 2). */ 
+    controle_bip = 3; 
+  } 
+
+  /* Verifica se o contador do controle dos bips chegou em 0 para desligar o buzzer. */ 
+  if (controle_bip == 0) { 
+    noTone(PIN_AUDIO); 
+  } else { 
+    controle_bip -= 1; /* Se não chegou em 0, diminua 1. */ 
+  } 
+
+/***** Verificar se a corrida acabou para o P1 *****/ 
+
+   /* Verifica se o carro 1 atingiu o número máximo de voltas. */ 
+
+  if (n_voltas_P1 > n_max_voltas) { 
+
+    /* Faz um loop para acender todos os LEDs da fita na cor do carro 1. */ 
+    for (int i = 0; i < N_LEDs; i++) { 
+
+      /* Seleciona a cor informada no preâmbulo. */ 
+      switch (Cor_P1) { 
+        case 1:  //Vermelho 
+          pista.setPixelColor(i, pista.Color(255, 0, 0)); 
+          break; 
+        case 2:  //Verde 
+          pista.setPixelColor(i, pista.Color(0, 255, 0)); 
+          break; 
+        case 3:  //Azul 
+          pista.setPixelColor(i, pista.Color(0, 0, 255)); 
+          break; 
+        case 4:  //Amarelo 
+          pista.setPixelColor(i, pista.Color(255, 255, 0)); 
+          break; 
+        case 5:  //Ciano 
+          pista.setPixelColor(i, pista.Color(0, 255, 255)); 
+          break; 
+         case 6:  //Magenta 
+          pista.setPixelColor(i, pista.Color(255, 0, 255)); 
+          break; 
+      } 
+    } 
+
+    pista.show();       /* Aplica as alterações acima. */ 
+    musica_vitoria(); 
+    pista.clear(); 
+    pista.show();       /* Aplica as alterações acima. */ 
+
+    /* Reinicia todas as variáveis para uma nova corrida. */ 
+    n_voltas_P1 = 0; 
+    n_voltas_P2 = 0; 
+    dist1 = 0; 
+    dist2 = 0; 
+    velocidade1 = 0; 
+    velocidade2 = 0; 
+
+    /* Restabelece o mapa de gravidade nulo (127). */ 
+    for (int i = 0; i < N_LEDs; i++) { 
+      mapa_gravidade[i] = 127; 
+    } 
+
+    /* Inicia uma nova corrida. */ 
+    iniciar_corrida(); 
+  }
+
+/***** Verificar se a corrida acabou para o P2 *****/ 
+
+   /* Verifica se o carro 2 atingiu o número máximo de voltas. */  
+  if (n_voltas_P2 > n_max_voltas) { 
+
+    /* Faz um loop para acender todos os LEDs da fita na cor do carro 2. */ 
+
+    for (int i = 0; i < N_LEDs; i++) { 
+
+      /* Seleciona a cor informada no preâmbulo. */ 
+      switch (Cor_P2) { 
+        case 1:  //Vermelho 
+          pista.setPixelColor(i, pista.Color(255, 0, 0)); 
+          break; 
+        case 2:  //Verde 
+          pista.setPixelColor(i, pista.Color(0, 255, 0)); 
+          break; 
+         case 3:  //Azul 
+          pista.setPixelColor(i, pista.Color(0, 0, 255)); 
+          break; 
+        case 4:  //Amarelo 
+          pista.setPixelColor(i, pista.Color(255, 255, 0)); 
+          break; 
+        case 5:  //Ciano 
+          pista.setPixelColor(i, pista.Color(0, 255, 255)); 
+          break; 
+        case 6:  //Magenta 
+          pista.setPixelColor(i, pista.Color(255, 0, 255)); 
+          break; 
+      } 
+    } 
+
+    pista.show();       // Aplica as alterações acima. 
+    musica_vitoria(); 
+    pista.clear(); 
+    pista.show();       // Aplica as alterações acima. 
+
+    /* Reinicia todas as variáveis para uma nova corrida. */ 
+    n_voltas_P1 = 0; 
+    n_voltas_P2 = 0; 
+    dist1 = 0; 
+    dist2 = 0; 
+    velocidade1 = 0; 
+    velocidade2 = 0; 
+
+    /* Restabelece o mapa de gravidade nulo (127). */ 
+    for (int i = 0; i < N_LEDs; i++) { 
+      mapa_gravidade[i] = 127; 
+    } 
+
+    /* Inicia uma nova corrida. */ 
+    iniciar_corrida(); 
+  }
+  
+    /* Pequena pausa. */ 
+  delay(tempo_delay); 
+  
+}
