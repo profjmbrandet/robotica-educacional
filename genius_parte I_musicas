@@ -1,0 +1,39 @@
+/* Função para tocar a música de abertura com animação de LEDs. */
+void tocarMusicaAbertura() {
+  acenderLed(0);
+  delay(300);
+  apagarLeds();
+  delay(100);
+  acenderLed(1);
+  delay(300);
+  apagarLeds();
+  delay(100);
+  acenderLed(2);
+  delay(300);
+  apagarLeds();
+  delay(100);
+  acenderLed(3);
+  delay(300);
+  apagarLeds();
+  delay(1000); /* Espera um segundo antes de iniciar a partida. */
+}
+
+/* Função para tocar a música de derrota com animação de LEDs. */
+void tocarMusicaDerrota() {
+  int notas[] = {330, 294, 262, 196, 150, 130, 110, 98}; /* Sequência das notas da derrota */
+  int duracoes[] = {150, 150, 150, 150, 150, 150, 150, 600}; /* Duração de cada nota. */
+  int leds[] = {2, 4, 6, 8}; /* Pinos dos LEDs. */
+  int numLeds = sizeof(leds) / sizeof(leds[0]); /* Número de LEDs disponíveis. */
+  for (int i = 0; i < 8; i++) {
+    /* Tocar a nota. */
+    tone(buzzer, notas[i]);
+    /* Acender um LED aleatório. */
+    int ledAleatorio = leds[random(numLeds)]; // Escolhe um LED aleatório
+    digitalWrite(ledAleatorio, HIGH); // Acende o LED escolhido
+    delay(duracoes[i]); /* Espera a duração da nota. */
+    noTone(buzzer); /* Para o som da nota. */
+    apagarLeds(); /* Apaga todos os LEDs. */
+    delay(100); /* Pequena pausa entre as notas. */
+  }
+  delay(1000); /* Espera um segundo antes de permitir iniciar uma nova partida. */
+}
