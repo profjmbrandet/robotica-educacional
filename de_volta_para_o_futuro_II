@@ -1,0 +1,57 @@
+/*   Tema - De volta para o futuro [Parte II] 
+
+Projeto capacitor de fluxos com acionamento sequencial de LEDs
+integrado ao rastro simbolizado pelas fitas de LEDs. 
+
+Montagem do protótipo com LEDs conectados em formato de Y, no 
+qual o centro está ligado à porta 2 do Arduino e cada linha do 
+Y com LEDs em paralelo conectados às portas digitais seguintes.  
+
+Para ampliar o protótipo, aumente a extensão do Y conectando cada  
+conjunto de LEDs em paralelo às demais portas digitais da   
+Sequência, ajustando a programação. 
+
+As fitas de LEDs estão conectadas às portas A0 (14) e A1 (15) do Arduino.
+
+A * T * E * N * Ç * Ã * O: Para preservar seu Arduino físico, 
+defina o brilho das fitas de LEDs com valores baixos pela variável brilho. */ 
+
+#include <Adafruit_NeoPixel.h> /* Inclui a biblioteca Adafruit NeoPixel. */
+
+Adafruit_NeoPixel fitaLED1(30, 14); /* Define número de LEDs na fita e porta digital conectada. */
+Adafruit_NeoPixel fitaLED2(30, 15); /* Define número de LEDs na fita e porta digital conectada. */
+
+int numeroLEDs = 300; /* Indica o número total de LEDs de cada fita. */
+
+int brilho = 15; /* Define o brilho dos LEDs de 0 a 255. Utilize valores baixos na fita física conforme alimentação e demais componentes conectados. */
+
+int tempoEfeito = 200; /* Definição inicial da velocidade do efeito aplicado ao capacitor. */
+
+/* Para checagem dos LEDs durante a conexão, carregue o teste com o valor true. Para execução do projeto, com o valor false. */
+bool teste = false;
+
+void setup() {
+
+  for (int i = 2; i <= 7; i++) {  
+    pinMode(i, OUTPUT); /* Define os pinos dos LEDs do capacitor de fluxo como saídas. */
+  } 
+
+  fitaLED1.begin(); /* Inicializa a fita 1. */
+  fitaLED2.begin(); /* Inicializa a fita 2. */
+  fitaLED1.setBrightness(brilho); /* Define o brilho dos LEDs entre 0 a 255. */
+  fitaLED2.setBrightness(brilho); /* Define o brilho dos LEDs entre 0 a 255. */
+ 
+}
+
+void loop() {
+
+/* Teste de acionamento dos LEDs para conexão ao protótipo. */
+  if (teste){
+   for (int i = 2; i <= 7; i++) { 
+   digitalWrite(i, HIGH); 
+   }
+  } else {   
+/*  Chama função para acionar o capacitor de fluxo e iniciar o projeto "De volta para o futuro". */
+  capacitor();
+      }
+}
