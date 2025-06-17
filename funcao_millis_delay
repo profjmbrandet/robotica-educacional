@@ -1,0 +1,40 @@
+/* 
+Protótipo de LEDs, buzzer e botão com controle pela função delay(). 
+*/ 
+
+// Definição das portas utilizadas. 
+#define pinoLED1 12    // Pino do LED1. 
+#define pinoLED2 11    // Pino do LED2. 
+#define pinoBotao 2    // Pino do botão. 
+#define pinoBuzzer 10  // Pino do buzzer. 
+
+void setup() { 
+  // Configuração dos pinos. 
+  pinMode(pinoLED1, OUTPUT); 
+  pinMode(pinoLED2, OUTPUT); 
+  pinMode(pinoBuzzer, OUTPUT); 
+  pinMode(pinoBotao, INPUT_PULLUP);  // Ativa o resistor interno. 
+  /* Configura o pino do botão como entrada com resistor pull-up interno. Isso significa que o botão, quando solto, está em nível alto (HIGH) e, quando pressionado, em nível baixo (LOW). */ 
+  } 
+
+void loop() {
+
+  // Controle do LED1.
+  digitalWrite(pinoLED1, HIGH);
+  delay(1000);
+  digitalWrite(pinoLED1, LOW);
+  delay(1000);
+
+  // Controle do LED2.
+  digitalWrite(pinoLED2, HIGH);
+  delay(500);
+  digitalWrite(pinoLED2, LOW);
+  delay(500);
+
+  // Verifica o estado do botão em pullup (0/false/LOW = pressionado).
+  if (digitalRead(pinoBotao) == 0) {
+    tone(pinoBuzzer, 600);  // Ativa o buzzer com frequencia de 600Hz.
+  }else{
+    noTone(pinoBuzzer);  // Desativa quando não pressionado.
+  }
+}
