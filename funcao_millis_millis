@@ -1,0 +1,50 @@
+/*  
+Protótipo de LEDs, buzzer e botão com controle pela função millis().  
+*/  
+
+// Definição das portas utilizadas. 
+#define pinoLED1 12    // Pino do LED1 
+#define pinoLED2 11    // Pino do LED2 
+#define pinoBotao 2    // Pino do botão 
+#define pinoBuzzer 10  // Pino do buzzer 
+
+// Criação das variáveis: 
+
+/* Variável para armazenar o tempo atual do Arduino, como um relógio. */ 
+unsigned long tempoAtual;  
+/* Variável para armazenar o último tempo registrado para o LED1. */ 
+unsigned long ultimoTempo1 = 0;  // Valor inicial de 0. 
+/* Variável para armazenar o último tempo registrado para o LED2. */  
+unsigned long ultimoTempo2 = 0;  // Valor inicial de 0. 
+
+void setup() { 
+  // Configuração dos pinos.  
+  pinMode(pinoLED1, OUTPUT); 
+  pinMode(pinoLED2, OUTPUT); 
+  pinMode(pinoBuzzer, OUTPUT);   
+  pinMode(pinoBotao, INPUT_PULLUP);  // Ativa o resistor interno. 
+  /* Configura o pino do botão como entrada com resistor pull-up interno. Isso significa que o botão, quando solto, está em nível alto (HIGH) e, quando pressionado, em nível baixo (LOW). */ 
+  } 
+
+void loop() { 
+   // Armazena o valor da leitura de millis(). 
+   tempoAtual = millis(); 
+  // Controle do LED1. 
+  if (tempoAtual - ultimoTempo1 >= 1000) { 
+       digitalWrite(pinoLED1, !digitalRead(pinoLED1)); /* Inverte o estado do LED1. */ 
+    ultimoTempo1 = tempoAtual;  /* Atualiza o último tempo registrado para o LED1. */ 
+  } 
+
+    // Controle do LED2. 
+  if (tempoAtual - ultimoTempo2 >= 500) { 
+    digitalWrite(pinoLED2, !digitalRead(pinoLED2)); /* Inverte o estado do LED2. */ 
+    ultimoTempo2 = tempoAtual;  /* Atualiza o último tempo registrado para o LED2. */ 
+  } 
+
+  // Verifica o estado do botão em pullup (0/false/LOW = pressionado). 
+  if (digitalRead(pinoBotao) == 0 ) { 
+        tone(pinoBuzzer, 600);  // Ativa o buzzer em 600 Hz. 
+  }else{ 
+    noTone(pinoBuzzer);  // Desativa quando não pressionado. 
+  } 
+} 
