@@ -1,0 +1,42 @@
+/* Biblioteca que permitirá a gravação de dados na memória EEPROM do Arduino. */ 
+#include <EEPROM.h> 
+
+/* Definição dos pinos dos LEDs. */ 
+#define ledAmarelo 8
+#define ledAzul 6
+#define ledVerde 4
+#define ledVermelho 2
+
+/* Definição dos pinos dos botões. */ 
+#define botaoAmarelo 9
+#define botaoAzul 7
+#define botaoVerde 5
+#define botaoVermelho 3
+
+/* Definição do pino do buzzer. */ 
+#define buzzer 11
+
+
+/* Notas musicais correspondentes aos LEDs. */ 
+#define notaAmarelo 262 /* Dó */ 
+#define notaAzul 294 /* Ré */ 
+#define notaVerde 330 /* Mi */ 
+#define notaVermelho 349 /* Fá */ 
+
+
+/* Tempo, em milissegundos, de acionamento de cada LED. */ 
+#define tempoLedAceso 300
+
+/* Endereço na EEPROM para armazenar o recorde (0 a 1023). */ 
+#define enderecoRecorde 0 
+
+/* Variável para armazenar o recorde. */ 
+int recorde = 0; 
+
+/* Array para armazenar a sequência gerada pelo jogo. */ 
+/* O tamanho do array é 100, o que significa que ele pode armazenar até 100 elementos. */ 
+int sequencia[100]; 
+
+/* Variável para controlar o tamanho atual da sequência gerada. */ 
+/* Indica quantos elementos da sequência foram gerados e devem ser reproduzidos pelo jogador. */ 
+int tamanhoSequencia = 0; 
