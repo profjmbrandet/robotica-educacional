@@ -1,0 +1,21 @@
+/* Função com parâmetro para acender o LED correspondente e tocar a nota musical. */ 
+void acenderLed(int led) { 
+  switch (led) { 
+    case 0: 
+      digitalWrite(ledAmarelo, HIGH); 
+      tone(buzzer, notaAmarelo); 
+      break; 
+    case 1: 
+      digitalWrite(ledAzul, HIGH); 
+      tone(buzzer, notaAzul); 
+      break; 
+    case 2: 
+      digitalWrite(ledVerde, HIGH); 
+      tone(buzzer, notaVerde); 
+      break; 
+    case 3: 
+      digitalWrite(ledVermelho, HIGH); 
+      tone(buzzer, notaVermelho); 
+      break; 
+  } 
+} 
