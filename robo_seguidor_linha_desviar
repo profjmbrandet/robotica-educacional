@@ -1,0 +1,44 @@
+void DesviarObstaculo() {  
+
+// Para o robô  
+analogWrite(M1, 0); // Desliga o motor 1 
+analogWrite(M2, 0); // Desliga o motor 2 
+delay(2000); // Espera 2 segundos 
+
+// 1ª curva: 
+analogWrite(M1, potencia); // Liga o motor 1 na potencia base 
+analogWrite(M2, 0); // Desliga o motor 2 (vira para a direita) 
+delay(600); // Espera 600 milissegundos (rotaciona 90°) 
+
+// Anda para frente:  
+analogWrite(M1, potencia); // Liga o motor 1 na potencia base 
+analogWrite(M2, potencia); // Liga o motor 1 na potencia base  
+delay(600); // Espera 600 milissegundos 
+ 
+// 2ª curva:  
+analogWrite(M1, 0); // Desliga o motor 1 
+analogWrite(M2, potencia); // Liga o motor 2 na potencia base (vira para a esquerda) 
+delay(300); // Espera 300 milissegundos (rotaciona 90°)    
+
+// Anda para frente: 
+analogWrite(M1, potencia); // Liga o motor 1 na potencia base 
+analogWrite(M2, potencia); // Liga o motor 2 na potencia base 
+delay(400); // Espera 400 milissegundos 
+
+// 3ª curva: 
+analogWrite(M1, 0); // Desliga o motor 1 
+analogWrite(M2, potencia); // Liga o motor 2 na potencia base (vira para a esquerda) 
+delay(600); // Espera 600 milissegundos (rotaciona 90°) 
+ 
+// Anda para frente  
+analogWrite(M1, potencia); // Liga o motor 1 na potencia base   
+analogWrite(M2, potencia); // Liga o motor 2 na potencia base 
+delay(300); // Espera 300 milissegundos 
+ 
+// 4ª curva, para finalizar manobra e retornar à linha: 
+analogWrite(M1, potencia); // Liga o motor 1 na potencia base 
+analogWrite(M2, 0); // Desliga o motor 2 (vira para a direita) 
+delay(400); // Espera 400 milissegundos (rotaciona 90°) 
+  
+return; // Retorna da função DesviarObstaculo 
+}  
