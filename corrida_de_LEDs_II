@@ -1,0 +1,17 @@
+/* Função que cria uma rampa recebendo 4 parâmetros (H, a, b, c). */
+void rampa(byte H, byte a, byte b, byte c) {
+
+  /* Utiliza a relação trigonométrica para criar o mapa de gravidade da subida. */
+  for (int i = 0; i < (b - a); i++) {
+    mapa_gravidade[a + i] = 127 - i * ((float)H / (b - a));
+  }
+
+  /* Define a gravidade nula (127) no topo da rampa. */
+  mapa_gravidade[b] = 127;
+
+  /* Utiliza a relação trigonométrica para criar o mapa de gravidade da descida. */
+  for (int i = 0; i < (c - b); i++) {
+    mapa_gravidade[b + i + 1] = 127 + H - i * ((float)H / (c - b));
+  }
+  
+}
