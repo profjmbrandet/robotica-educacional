@@ -1,0 +1,54 @@
+/* Função para iniciar uma corrida. */
+void iniciar_corrida() {
+
+  /* Somente inicia após pressionar o botão P1. */
+  while (digitalRead(PIN_P1) == 1) {}
+
+  /* Verifica se a corrida foi iniciada com o botão P2 pressionado, então criará a(s) rampa(s) abaixo. */
+  if (digitalRead(PIN_P2) == 0) {
+    /* Criar rampas. */
+    /* rampa(Altura, Inicio_Subida, Topo, Final_Descida) */
+    rampa(12, 13, 17, 22);
+    /*Criando uma segunda rampa na fita com 300 LEDs. */
+    //rampa(8, 150, 180, 200);
+  }
+
+  /* Animação da largada. */
+
+  /* Liga dois LEDs Vermelhos. */
+  pista.setPixelColor(12, pista.Color(255, 0, 0));
+  pista.setPixelColor(11, pista.Color(255, 0, 0));
+  pista.show();
+  /* Toca um bip de 400Hz por 2 segundos. */
+  tone(PIN_AUDIO, 400);
+  delay(2000);
+  noTone(PIN_AUDIO);
+  delay(50);
+
+  /* Desliga os dois LEDs Vermelhos e liga dois LEDs Amarelos. */
+  pista.setPixelColor(12, pista.Color(0, 0, 0));
+  pista.setPixelColor(11, pista.Color(0, 0, 0));
+  pista.setPixelColor(10, pista.Color(255, 255, 0));
+  pista.setPixelColor(9, pista.Color(255, 255, 0));
+  pista.show();
+  /* Toca um bip de 600Hz por 2 segundos. */
+  tone(PIN_AUDIO, 600);
+  delay(2000);
+  noTone(PIN_AUDIO);
+  delay(50);
+
+  /* Desliga os dois LEDs Amarelos e liga dois LEDs verdes. */
+  pista.setPixelColor(9, pista.Color(0, 0, 0));
+  pista.setPixelColor(10, pista.Color(0, 0, 0));
+  pista.setPixelColor(8, pista.Color(0, 255, 0));
+  pista.setPixelColor(7, pista.Color(0, 255, 0));
+  pista.show();
+  /* Toca um bip de 1200Hz por 2 segundos. */
+  tone(PIN_AUDIO, 1200);
+  delay(2000);
+  noTone(PIN_AUDIO);
+  /* Desliga os dois LEDs verdes. */
+  pista.setPixelColor(8, pista.Color(0, 0, 0));
+  pista.setPixelColor(7, pista.Color(0, 0, 0));
+  pista.show();
+}
