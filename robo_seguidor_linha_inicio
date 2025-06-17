@@ -1,0 +1,28 @@
+#include "preambulo.h"
+
+void setup() {  
+  Serial.begin(9600); // Inicializa a comunicação serial.   
+ 
+  pinMode(M1, OUTPUT); // Define o pino M1 como saída 
+  pinMode(M2, OUTPUT); // Define o pino M2 como saída 
+  pinMode(dir1, OUTPUT); // Define o pino dir1 como saída 
+  pinMode(dir2, OUTPUT); // Define o pino dir2 como saída 
+ 
+  digitalWrite(dir1, LOW); // Define a direção inicial do motor 1 para frente 
+  digitalWrite(dir2, LOW); // Define a direção inicial do motor 2 para frente 
+   
+  pinMode(pin_S1, INPUT); // Define o pino do sensor IR 1 como entrada 
+  pinMode(pin_S2, INPUT); // Define o pino do sensor IR 2 como entrada 
+} 
+
+void loop() {  
+  dist_obstaculo = ultrasonic.distanceRead(CM); // Lê a distância em centímetros do sensor ultrassônico 
+  Serial.print("Distancia: "); // Imprime "Distancia: " no monitor serial 
+  Serial.print(dist_obstaculo); // Imprime a distância medida no monitor serial 
+  Serial.println(" cm"); // Imprime " cm" e pula para a próxima linha no monitor serial 
+  if (dist_obstaculo <= 15) { // Verifica se a distância é menor ou igual a 15 cm (obstáculo detectado) 
+    DesviarObstaculo(); // Chama a função para desviar do obstáculo.  
+  } else {  
+    SeguirLinha(); // Chama a função para seguir a linha.  
+  }  
+} 
