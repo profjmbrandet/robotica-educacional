@@ -1,0 +1,23 @@
+void musica_vitoria() { 
+  /* Define um array com as frequências das notas musicais para a música de vitória. */
+  int win_musica[] = {  /* Música de vitória incrementada. */ 
+    2093, 2637, 3136, 3520, 
+    3520, 3951, 4186, 4186, 
+    3951, 3520, 3136, 2637, 
+    2349, 2093, 2349, 2637, 
+    3136 
+  }; 
+
+  /* Calcula o número de elementos no array win_musica. */ 
+  int msize = sizeof(win_musica) / sizeof(int);  
+
+  /* Loop para tocar cada nota da música de vitória. */ 
+  for (int note = 0; note < msize; note++) {  
+    /* Toca a nota atual no pino PIN_AUDIO por 200 milissegundos. */ 
+    tone(PIN_AUDIO, win_musica[note], 200);  
+    /* Aguarda 230 milissegundos para permitir que a nota seja ouvida. */ 
+    delay(230);  
+    /* Para de tocar a nota no pino pinAUDIO. */ 
+    noTone(PIN_AUDIO);  
+  } 
+}
