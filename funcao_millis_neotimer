@@ -1,0 +1,48 @@
+/*   
+Protótipo de LEDs, buzzer e botão com utilização da biblioteca Neotimer.   
+*/   
+
+#include <neotimer.h> 
+ 
+/* Criação do objeto de controle para cada timer. */ 
+Neotimer timer_1; 
+Neotimer timer_2; 
+
+// Definição das portas utilizadas.
+#define pinoLED1 12    // Pino do LED1 
+#define pinoLED2 11    // Pino do LED2 
+#define pinoBotao 2    // Pino do botão 
+#define pinoBuzzer 10  // Pino do buzzer 
+
+void setup() { 
+  /* Define os tempos para os timers em milissegundos. */ 
+  timer_1.set(1000); 
+  timer_2.set(500); 
+ 
+  // Configuração dos pinos. 
+  pinMode(pinoLED1, OUTPUT); 
+  pinMode(pinoLED2, OUTPUT); 
+  pinMode(pinoBuzzer, OUTPUT); 
+  pinMode(pinoBotao, INPUT_PULLUP);  // Ativa o resistor interno. 
+  /* Configura o pino do botão como entrada com resistor pull-up interno. Isso significa que o botão, quando solto, está em nível alto (HIGH) e, quando pressionado, em nível baixo (LOW). */ 
+} 
+
+void loop() { 
+   
+  /* Verifica se o timer_1 atingiu o valor configurado. */ 
+  if (timer_1.repeat()) { 
+    digitalWrite(pinoLED1, !digitalRead(pinoLED1));  /* Inverte o estado atual do LED1. */  
+  } 
+
+  /* Verifica se o timer_2 atingiu o valor configurado. */ 
+  if (timer_2.repeat()) { 
+    digitalWrite(pinoLED2, !digitalRead(pinoLED2));  /* Inverte o estado atual do LED2. */  
+  } 
+
+  // Verifica o estado do botão em pullup (0/false/LOW = pressionado).   
+  if (digitalRead(pinoBotao) == LOW) { 
+    tone(pinoBuzzer, 600);  // Ativa o buzzer com frequência de 600Hz. 
+  }else{ 
+    noTone(pinoBuzzer);  // Desativa quando não pressionado. 
+  } 
+} 
