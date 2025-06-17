@@ -1,0 +1,46 @@
+/* Inclui o preâmbulo a partir da aba preambulo.h */ 
+#include "preambulo.h" 
+
+void setup() { 
+
+  /* Chama a função que faz as configurações necessárias. */ 
+  configurar(); 
+
+  /* Carrega o recorde da EEPROM. */ 
+  EEPROM.get(enderecoRecorde, recorde); 
+   Serial.print("Recorde Atual: "); 
+  if (recorde < 0 || recorde > 100) { 
+    Serial.println("0"); 
+  } else { 
+    Serial.println(recorde); 
+  }  
+ /* Espera pelo jogador para iniciar a partida. */ 
+  esperarNovoJogo(); 
+} 
+
+/* Função loop é executada continuamente. */ 
+
+void loop() { 
+  /* Mostra a sequência ao jogador. */ 
+  mostrarSequencia(); 
+  /* Verifica a entrada do jogador. */ 
+  if (verificarEntradaJogador()) { /* Se acertou, faça... */ 
+    Serial.println("Correto! Próxima rodada."); 
+    delay(1000); 
+    gerarSequencia(); 
+  } else { 
+    Serial.println("Game Over!"); 
+    tocarMusicaDerrota(); 
+    /* Atualiza o recorde se o jogador tiver atingido um novo recorde. */ 
+    if (tamanhoSequencia - 1 > recorde ) { 
+      recorde = tamanhoSequencia - 1; /* Atualiza o recorde. */ 
+      EEPROM.put(enderecoRecorde, recorde); /* Grava o recorde na EEPROM. */ 
+      Serial.print("Novo Recorde: "); 
+      Serial.println(recorde); 
+    } else { 
+      Serial.print("Recorde Atual: "); 
+      Serial.println(recorde); 
+    } 
+    esperarNovoJogo(); 
+  } 
+} 
