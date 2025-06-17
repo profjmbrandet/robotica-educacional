@@ -1,0 +1,22 @@
+void SeguirLinha() { 
+  Sensor1 = digitalRead(pin_S1); // Lê e armazena o estado do sensor IR 1 
+  Sensor2 = digitalRead(pin_S2); // Lê e armazena o estado do sensor IR 2 
+
+  Serial.print("Sensor1: "); // Imprime "Sensor1: " no monitor serial 
+  Serial.print(Sensor1); // Imprime o estado do sensor IR 1 no monitor serial 
+  Serial.print(" | Sensor2: "); // Imprime " | Sensor2: " no monitor serial 
+  Serial.println(Sensor2); // Imprime o estado do sensor IR 2 e pula para a próxima linha no monitor serial 
+  
+  if ((Sensor1 == 0) && (Sensor2 == 0)) { // Se ambos os sensores IR detectarem branco, anda para frente 
+    analogWrite(M1, potencia); // Liga o motor 1 na potencia base 
+    analogWrite(M2, potencia); // Liga o motor 2 na potencia base 
+  } 
+  else if ((Sensor1 == 1) && (Sensor2 == 0)) { // Se o sensor IR 1 detectar preto e o sensor IR 2 detectar branco... 
+    analogWrite(M1, 0); // Desliga o motor 1 
+    analogWrite(M2, potencia); // Liga o motor 2 na potencia base (vira para a direita) 
+  } 
+  else if ((Sensor1 == 0) && (Sensor2 == 1)) { // Se o sensor IR 1 detectar branco e o sensor IR 2 detectar preto... 
+    analogWrite(M1, potencia); // Liga o motor 1 na potencia base 
+    analogWrite(M2, 0); // Desliga o motor 2 (vira para a esquerda) 
+  } 
+}
