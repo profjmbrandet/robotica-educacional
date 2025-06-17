@@ -1,0 +1,21 @@
+void configurar(){
+  //  EEPROM.put(enderecoRecorde, 0); /* Carregue uma vez para resetar o recorde da EEPROM. */
+
+  /* Configuração dos pinos dos LEDs como saída. */ 
+  pinMode(ledAmarelo, OUTPUT); 
+  pinMode(ledAzul, OUTPUT); 
+  pinMode(ledVerde, OUTPUT); 
+  pinMode(ledVermelho, OUTPUT); 
+
+  /* Configuração dos pinos dos botões como entrada pull-up. */ 
+  pinMode(botaoAmarelo, INPUT_PULLUP); 
+  pinMode(botaoAzul, INPUT_PULLUP); 
+  pinMode(botaoVerde, INPUT_PULLUP); 
+  pinMode(botaoVermelho, INPUT_PULLUP); 
+
+  /* Inicialização da comunicação serial para debug. */ 
+  Serial.begin(9600); 
+ 
+  /* Inicializa o gerador de números aleatórios. */ 
+  randomSeed(analogRead(0)); 
+} 
