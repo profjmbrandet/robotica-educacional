@@ -1,0 +1,33 @@
+/* Função para esperar até que um botão seja pressionado. */ 
+int esperarBotaoPressionado() { 
+  while (true) { 
+    if (digitalRead(botaoAmarelo) == LOW) { 
+      acenderLed(0); 
+      delay(tempoLedAceso); /* Mantém o LED aceso pelo tempo definido. */ 
+      apagarLeds(); 
+      while (digitalRead(botaoAmarelo) == LOW) {}; /* Espera até o botão ser solto. */ 
+      return 0; 
+    } 
+    if (digitalRead(botaoAzul) == LOW) { 
+      acenderLed(1); 
+      delay(tempoLedAceso); /* Mantém o LED aceso pelo tempo definido. */ 
+      apagarLeds(); 
+      while (digitalRead(botaoAzul) == LOW) {}; /* Espera até o botão ser solto. */ 
+      return 1; 
+    } 
+    if (digitalRead(botaoVerde) == LOW) { 
+      acenderLed(2); 
+      delay(tempoLedAceso); /* Mantém o LED aceso pelo tempo definido. */ 
+      apagarLeds(); 
+      while (digitalRead(botaoVerde) == LOW) {}; /* Espera até o botão ser solto. */ 
+      return 2; 
+    } 
+    if (digitalRead(botaoVermelho) == LOW) { 
+      acenderLed(3); 
+      delay(tempoLedAceso); /* Mantém o LED aceso pelo tempo definido. */ 
+      apagarLeds(); 
+      while (digitalRead(botaoVermelho) == LOW) {}; /* Espera até o botão ser solto. */ 
+      return 3; 
+    } 
+  } 
+}
