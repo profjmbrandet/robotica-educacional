@@ -1,0 +1,16 @@
+/* Função para iniciar uma corrida. */
+void iniciar_corrida() {
+
+  /* Somente inicia após pressionar o botão P1. */
+  while (digitalRead(PIN_P1) == 1) {}
+
+  /* Verifica se a corrida foi iniciada com o botão P2 pressionado, então criará a(s) rampa(s) abaixo. */
+  if (digitalRead(PIN_P2) == 0) {
+    /* Criar rampas. */
+    /* rampa(Altura, Inicio_Subida, Topo, Final_Descida) */
+    rampa(12, 13, 17, 22);
+    /*Criando uma segunda rampa na fita com 300 LEDs. */
+    //rampa(8, 150, 180, 200);  
+  }
+
+}
