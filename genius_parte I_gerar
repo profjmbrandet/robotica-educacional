@@ -1,0 +1,7 @@
+/* Função para gerar uma nova sequência. */ 
+void gerarSequencia() { 
+  sequencia[tamanhoSequencia] = random(4); /* Gera um número aleatório entre 0 e 3. */ 
+  tamanhoSequencia++; 
+  Serial.print("Nível: "); 
+  Serial.println(tamanhoSequencia); /* Imprime o nível atual no monitor serial. */ 
+} 
