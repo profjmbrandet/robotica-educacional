@@ -1,0 +1,52 @@
+/*  
+Tema - De volta para o futuro [Parte I] 
+
+Projeto capacitor de fluxos com acionamento sequencial de LEDs. 
+
+Montagem do protótipo com LEDs conectados em formato de Y, no 
+qual o centro está ligado à porta 2 do Arduino e cada linha do 
+Y com LEDs em paralelo conectados às portas digitais seguintes.  
+
+Para ampliar o protótipo, aumente a extensão do Y conectando cada  
+conjunto de LEDs em paralelo às demais portas digitais da   
+Sequência, ajustando a programação. 
+*/ 
+
+/* Definição inicial da velocidade do efeito. */ 
+int tempoEfeito = 200; 
+
+void setup() { 
+
+  /* Define os pinos dos LEDs como saídas. */ 
+  for (int i = 2; i <= 7; i++) { 
+    pinMode(i, OUTPUT); 
+  } 
+
+} 
+
+void loop() { 
+
+  /* Liga e desliga os LEDs em sequência. */ 
+  for (int i = 7; i >= 2; i--) { 
+    digitalWrite(i, HIGH); 
+    delay(tempoEfeito); 
+    digitalWrite(i, LOW); 
+    delay(tempoEfeito); 
+  } 
+
+  /* Reduz o tempo do efeito a cada ciclo. */ 
+  tempoEfeito -= 10; 
+ 
+  if (tempoEfeito == 0) { 
+    /* Aciona todos os LEDs simultaneamente por 500ms.*/ 
+    for (int i = 7; i >= 2; i--) { 
+      digitalWrite(i, HIGH); 
+    } 
+    delay(500); 
+    /* Apaga todos os LEDs simultaneamente. */ 
+    for (int i = 7; i >= 2; i--) { 
+      digitalWrite(i, LOW); 
+    } 
+  } 
+
+}
