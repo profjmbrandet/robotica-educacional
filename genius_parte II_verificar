@@ -1,0 +1,10 @@
+/* Função para verificar a entrada do jogador. */ 
+bool verificarEntradaJogador() { 
+  for (int i = 0; i < tamanhoSequencia; i++) { 
+    int botaoPressionado = esperarBotaoPressionado(); 
+    if (botaoPressionado != sequencia[i]) { 
+      return false; /* Entrada incorreta. */ 
+    } 
+  } 
+return  true; /* Entrada correta. */ 
+} 
