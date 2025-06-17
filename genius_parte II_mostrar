@@ -1,0 +1,9 @@
+/* Função para mostrar a sequência ao jogador. */ 
+void mostrarSequencia() { 
+  for (int i = 0; i < tamanhoSequencia; i++) { 
+    acenderLed(sequencia[i]); /* Chama a função que acende o LED da sequência e toca a nota. */ 
+    delay(tempoLedAceso); /* Aguarda pelo tempo definido entre o acionamento de cada LED. */ 
+    apagarLeds(); /* Chama a função que apaga os LEDs e para o som. */ 
+    delay(tempoLedAceso); /* Pausa entre cada LED na sequência. */ 
+  } 
+} 
