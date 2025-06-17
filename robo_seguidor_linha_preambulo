@@ -1,0 +1,26 @@
+#include <Ultrasonic.h> /* Inclui a biblioteca para o sensor ultrassônico. */
+
+#define dir1 5  /* Define o pino de direção do motor 1. */  
+#define M1 6    /* Define o pino de potencia do motor 1. */ 
+#define dir2 9  /* Define o pino de direção do motor 2. */ 
+#define M2 10   /* Define o pino de potencia do motor 2. */  
+
+// Definição dos pinos do sensor ultrassônico 
+#define pino_trigger 12 
+#define pino_echo 11 
+
+#define pin_S1 3  /* Define o pino do sensor de linha IR 1. */ 
+#define pin_S2 2  /* Define o pino do sensor de linha IR 2. */ 
+
+// Variável responsável por controlar a potencia dos motores 
+int potencia = 100; // potencia base (ajuste conforme necessário)
+
+// Variáveis para armazenar valores dos sensores infravermelho conforme detecção das linhas.
+bool Sensor1 = 0;
+bool Sensor2 = 0;
+
+// Variável para armazenar a distância medida pelo sensor ultrassônico.
+float dist_obstaculo;
+
+// Inicializa o sensor ultrassônico nos pinos definidos.
+Ultrasonic ultrasonic(pino_trigger, pino_echo); 
