@@ -1,0 +1,43 @@
+/* Função que desenha o carro 1 com comprimento em função do número de voltas. */
+void desenhar_carro1(void) {
+
+/* Seleciona a cor do carro 1 com base no valor de Cor_P1. */
+  switch (Cor_P1) {
+
+    case 1: /* Vermelho. */
+      for (int i = 0; i <= n_voltas_P1; i++) {
+        pista.setPixelColor(((word)dist1 % N_LEDs) + i, pista.Color(255, 0, 0)); // Aciona os LEDs atualizando as posições
+      }
+      break;
+
+    case 2: /* Verde. */
+      for (int i = 0; i <= n_voltas_P1; i++) {
+        pista.setPixelColor(((word)dist1 % N_LEDs) + i, pista.Color(0, 255, 0)); // Aciona os LEDs atualizando as posições
+      }
+      break;
+
+    case 3: /* Azul . */
+      for (int i = 0; i <= n_voltas_P1; i++) {
+        pista.setPixelColor(((word)dist1 % N_LEDs) + i, pista.Color(0, 0, 255)); // Aciona os LEDs atualizando as posições
+      }
+      break;
+
+    case 4:  /* Amarelo. */
+      for (int i = 0; i <= n_voltas_P1; i++) {
+        pista.setPixelColor(((word)dist1 % N_LEDs) + i, pista.Color(255, 255, 0));
+      }
+      break;
+
+    case 5:  /* Ciano. */
+      for (int i = 0; i <= n_voltas_P1; i++) {
+        pista.setPixelColor(((word)dist1 % N_LEDs) + i, pista.Color(0, 255, 255));
+      }
+      break;
+      
+    case 6:  /* Magenta. */
+      for (int i = 0; i <= n_voltas_P1; i++) {
+        pista.setPixelColor(((word)dist1 % N_LEDs) + i, pista.Color(255, 0, 255));
+      }
+      break;
+  }
+}
