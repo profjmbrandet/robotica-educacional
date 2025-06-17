@@ -1,0 +1,98 @@
+/* 
+   ____                     _      ______ _____    _____ 
+  / __ \                   | |    |  ____|  __ \  |  __ \ 
+ | |  | |_ __   ___ _ __   | |    | |__  | |  | | | |__) |__ _  ___ ___ 
+ | |  | | '_ \ / _ \ '_ \  | |    |  __| | |  | | |  _  // _` |/ __/ _ \ 
+ | |__| | |_) |  __/ | | | | |____| |____| |__| | | | \ \ (_| | (_|  __/ 
+  \____/| .__/ \___|_| |_| |______|______|_____/  |_|  \_\__,_|\___\___| 
+        | | 
+        |_| 
+
+Open LED Race, uma corrida de carro minimalista para fitas LED! 
+ 
+Este é um programa gratuito e você pode distribuir e/ou modificá-lo pelos 
+termos GNU Gerneral Public License (Licença Pública Geral), publicado 
+pela Free Software Foundation (Fundação de Software Gratuitos), e  
+também pela versão 3 da Licença, ou qualquer versão recente. 
+
+  por gbarbarov@singulardevices.com para Arduino day Seville 2019 
+  https://www.hackster.io/gbarbarov/open-led-race-a0331a 
+  https://twitter.com/openledrace 
+
+  Próximos melhoramentos em: 
+  https://gitlab.com/open-led-race 
+  https://openledrace.net/open-software/ 
+
+Traduzido e adaptado por Robótica Paraná. 
+
+*/
+
+/* Inclui o preâmbulo no sketch. */
+#include "preambulo.h"
+
+void setup() {
+
+  /* Inicia o objeto da fita de LEDs. */
+  pista.begin();
+
+  /* Definimos o brilho máximo dos LEDs. (0 a 255). */
+  pista.setBrightness(BRILHO_MAX);
+
+  /* Iniciamos com todos os LEDs desligados. */
+  pista.clear();
+  /* Aplica as modificações acima. */
+  pista.show();
+
+  /* Configurações das portas dos botões como INPUT_PULLUP. */
+  pinMode(PIN_P1, INPUT_PULLUP);
+  pinMode(PIN_P2, INPUT_PULLUP);
+
+  /* Inicia com o valor de gravidade nula para todos os LEDs (127). 
+   O mapa varia de 0 a 255.
+   mapa_gravidade[i] = 127 (Aceleração da gravidade nula - Superfície plana)
+   mapa_gravidade[i] > 127 (Aceleração da gravidade positiva - Descendo a rampa)
+   mapa_gravidade[i] < 127 (Aceleração da gravidade negativa - Subindo a rampa) */
+  for (int i = 0; i < N_LEDs; i++) {
+    mapa_gravidade[i] = 127;
+  }
+
+  /* Chama a função de início da corrida. */
+  iniciar_corrida();
+}
+
+void loop() {
+
+  /* Desenhar os carros na pista. */
+
+  tempoAtual = millis();
+
+  /* Cria um controle alternado para mostrar os carros quando sobrepostos. */
+  /* Checa se decorreu pelo menos 200 milissegundos. */
+  if (tempoAtual - ultimaAlteracao >= 200) {
+    /* Se ordem_desenho for igual a 0, altera para 1. */
+    if (ordem_desenho == 0) {
+      ordem_desenho = 1;
+      /* Atualiza o valor de tempoAtual. */
+      ultimaAlteracao = tempoAtual;
+      /* Senão, ou seja, se ordem_desenho for igual a 1... */
+    } else {
+      /* ...altera para 0. */
+      ordem_desenho = 0;
+      /* Atualiza o valor de tempoAtual. */
+      ultimaAlteracao = tempoAtual;
+    }
+  }
+
+  /* Chama a função para desenhar os carros na ordem acima. */
+  if (ordem_desenho == 0) {
+    desenhar_carro1();
+    desenhar_carro2();
+  } else {
+    desenhar_carro2();
+    desenhar_carro1();
+  }
+
+  /* Aplica as modificações acima. */
+  pista.show();
+
+}
