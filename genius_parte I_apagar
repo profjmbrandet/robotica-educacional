@@ -1,0 +1,8 @@
+/* Função para apagar todos os LEDs e parar o som. */ 
+void apagarLeds() { 
+  digitalWrite(ledAmarelo, LOW); 
+  digitalWrite(ledAzul, LOW); 
+  digitalWrite(ledVerde, LOW); 
+  digitalWrite(ledVermelho, LOW); 
+  noTone(buzzer); 
+} 
